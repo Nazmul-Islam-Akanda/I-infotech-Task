@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\StudentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,9 @@ Route::group(['prefix'=>'/admin','middleware'=>'auth'],function(){
     })->name('admin.dashboard');
     
     Route::get('/logout',[LoginController::class,'logout'])->name('logout');
+
+
+    Route::resource('/students',StudentsController::class);
 
 
 });
