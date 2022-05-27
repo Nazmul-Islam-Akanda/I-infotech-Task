@@ -22,9 +22,13 @@ Route::get('/', function () {
 
 Route::post('/do/login',[LoginController::class,'doLogin'])->name('doLogin');
 
+Route::group(['prefix'=>'/admin','middleware'=>'auth'],function(){
 
-Route::get('/admin/dashboard', function () {
-    return view('admin.master');
-})->name('admin.dashboard');
+    Route::get('/dashboard', function () {
+        return view('admin.master');
+    })->name('admin.dashboard');
+    
+    Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 
-Route::get('/logout',[LoginController::class,'logout'])->name('logout');
+
+});
