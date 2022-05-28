@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use App\Models\Student_result;
 
@@ -15,7 +16,8 @@ class StudentsController extends Controller
      */
     public function index()
     {
-        $students=Student::paginate(10);
+        $students=Student::with('student_res')->paginate(10);
+        // dd($student_results);
         return view('admin.pages.students-info',compact('students'));
     }
 
@@ -26,7 +28,8 @@ class StudentsController extends Controller
      */
     public function create()
     {
-        return view('admin.pages.students-create');
+        $subjects=Subject::all();
+        return view('admin.pages.students-create',compact('subjects'));
     }
 
     /**
@@ -42,7 +45,9 @@ class StudentsController extends Controller
 
         $request->validate([
             'name'=>'required|unique:students',
-            'image'=>'dimensions:width=100,height=100'
+            'image'=>'dimensions:width=100,height=100',
+            'subject'=>'requied',
+            'number'=>'required'
         ]);
 
         $filename='';
@@ -58,13 +63,25 @@ class StudentsController extends Controller
             'image'=>$filename
         ]);
 
-        // $student=Student::where('name',$request->name)->first();
+        $student=Student::where('name',$request->name)->first();
 
-        // Student_result::create([
-        //     'student_id'=>$student->id,
-        //     'subject_id'=>1,
-        //     'achieve_number'=>'120'
-        // ]);
+        $subject_id=$request->subject;
+        $number=$request->number;
+
+        $marks=array_combine($subject_id,$number);
+
+        // dd($marks);
+
+        foreach($marks as $key=>$mark){
+
+            // dd($mark);
+            Student_result::create([
+                'student_id'=>$student->id,
+                'subject_id'=>$key,
+                'achieve_number'=>$mark
+            ]);
+        }
+        
 
         return redirect()->route('students.index')->with('msg','Student record added successfully.');
     }

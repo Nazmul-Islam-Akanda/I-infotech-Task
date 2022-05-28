@@ -25,7 +25,7 @@
       <th scope="row">{{$key+1}}</th>
       <td> <img src="{{url('/storage/uploads/'.$student->image)}}" width="50px" alt="Student Picture"> </td>
       <td>{{$student->name}}</td>
-      <td></td>
+      <td>{{$student->student_res->sum('achieve_number')}}</td>
       <td>
       <a href="" class="btn btn" Style="background-color:#36C35B; color:white">View</a>
       <a href="" class="btn btn" Style="background-color:#EBB871; color:white">Edit</a>
