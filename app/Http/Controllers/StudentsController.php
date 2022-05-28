@@ -46,7 +46,7 @@ class StudentsController extends Controller
         $request->validate([
             'name'=>'required|unique:students',
             'image'=>'dimensions:width=100,height=100',
-            'subject'=>'requied',
+            'subject'=>'required',
             'number'=>'required'
         ]);
 
@@ -94,7 +94,7 @@ class StudentsController extends Controller
      */
     public function show($id)
     {
-        //
+       return Student::findOrFail($id);
     }
 
     /**
@@ -105,7 +105,11 @@ class StudentsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $student=Student::with('student_res')->find($id);
+        $subjects=Subject::all();
+
+
+        return view('admin.pages.students-edit',compact('student','subjects'));
     }
 
     /**
@@ -117,7 +121,63 @@ class StudentsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
+        $stud=Student::with('student_res')->find($id);
+
+        $request->validate([
+            'name'=>"required|unique:students,name,$id",
+            'image'=>"dimensions:width=100,height=100",
+            'subject'=>'required',
+            'number'=>'required'
+        ]);
+
+        $filename=$stud->image;
+
+        if($request->hasFile('image'))
+        {
+            $file=$request->file('image');
+            $filename=date('Ymdhms').'.'.$file->getClientOriginalExtension();
+            $file->storeAs('/uploads',$filename);
+        }
+
+        $stud->update([
+            'name'=>$request->name,
+            'image'=>$filename
+        ]);
+
+
+        $subject_id=$request->subject;
+        $number=$request->number;
+
+        $marks=array_combine($subject_id,$number);
+
+        $std_id=Student::where('name',$request->name)->pluck('id');
+
+        $std_results=Student_result::where('student_id',$std_id)->get();
+        
+        foreach($std_results as $std_result)
+        {
+            $std_result->delete();
+        }
+        // dd($std_result);
+
+        
+            foreach($marks as $key=>$mark)
+        {
+
+            Student_result::create([
+                'student_id'=>$stud->id,
+                'subject_id'=>$key,
+                'achieve_number'=>$mark,
+            ]);
+
+    
+        
+        }
+        
+
+
+        return redirect()->route('students.index')->with('msg','Student record updated successfully.');
     }
 
     /**
@@ -128,6 +188,7 @@ class StudentsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Student::find($id)->delete();
+        return redirect()->back()->with('msg','Student Information Deleted.');
     }
 }
