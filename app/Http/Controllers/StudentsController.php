@@ -48,7 +48,12 @@ class StudentsController extends Controller
             'image'=>'dimensions:width=100,height=100',
             'subject'=>'required',
             'number'=>'required'
-        ]);
+        ],
+    
+        [
+            'image.dimensions'=>"Image must be 100 x 100 size.",
+        ]
+    );
 
         $filename='';
         if($request->hasFile('image'))
@@ -129,7 +134,12 @@ class StudentsController extends Controller
             'image'=>"dimensions:width=100,height=100",
             'subject'=>'required',
             'number'=>'required'
-        ]);
+        ],
+    
+        [
+            'image.dimensions'=>"Image must be 100 x 100 size.",
+        ]
+    );
 
         $filename=$stud->image;
 
@@ -159,7 +169,7 @@ class StudentsController extends Controller
         {
             $std_result->delete();
         }
-        // dd($std_result);
+        
 
         
             foreach($marks as $key=>$mark)

@@ -9,4 +9,9 @@ class Student_result extends Model
 {
     use HasFactory;
     protected $guarded=[];
+
+    public function sub()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
 }
